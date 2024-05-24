@@ -8,7 +8,7 @@ HEADERS = {
     "Chrome/39.0.2171.95 Safari/537.36"
 }
 # список адресов, откуда хотим брать новости
-URLS = ["https://news.mail.ru/"]
+URLS = ["https://op-ex.ru/post_news/", 'https://op-ex.ru/post_news/page/2/']
 
 
 # собираем инфу с сайта
@@ -22,7 +22,7 @@ def get_data(url):
     soup = bs(page.text, "lxml")
 
     # собираем все что нам нужно
-    data = soup.find_all("a", class_="list__text")
+    data = soup.find_all('div', class_='col-12 mb-4')
     return data
 
 
@@ -30,11 +30,13 @@ def get_data(url):
 def add_to_file(data):
     with open("news.txt", "a", encoding="utf-8") as file:
         for item in data:
-            title = item.text  # заголовок статьи
-            url = item.get("href")  # ссылка на статью
+            title = item.find('a', class_='text-body stretched-link').text # заголовок новости
+            url = item.find('a', class_='text-body stretched-link').get("href")  # ссылка на статью
             file.write(f"{title}. Ссылка: {url}\n")  # сохраняем запись в файл
 
 
 if __name__ == "__main__":
     for url in URLS:
         add_to_file(get_data(url))
+
+
